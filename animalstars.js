@@ -26,6 +26,10 @@ function start() {
 
   // FUTURE: Add event-listeners to filter and sort buttons
   //TODO: Add eventlisteners to filters and sorting
+  document
+    .querySelectorAll("[data-action='filter']")
+    .forEach((button) => button.addEventListener("click", selectFilter));
+  document.querySelectorAll("[data-action='sort']").forEach((button) => button.addEventListener("click", selectSort));
 }
 
 async function loadJSON() {
@@ -38,8 +42,7 @@ async function loadJSON() {
 
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
-
-  buildList();
+  filterList(allAnimals);
 }
 
 function preapareObject(jsonObject) {
@@ -54,14 +57,62 @@ function preapareObject(jsonObject) {
   return animal;
 }
 
-function buildList() {
-  const currentList = allAnimals;
+function selectFilter(event) {
+  const filter = event.target.dataset.filter;
+  console.log(`User selected ${filter}`);
+  filterList(filter);
+  /* setFilter(filter); */
+}
+/* function setFilter(filterBy) {
+  buildList();
+} */
+function filterList(filterBy) {
+  let filteredList = allAnimals;
+  if (filterBy === "cat") {
+    //create filtered list of only cat
+    filteredList = allAnimals.filter(isCat);
+  } else if (filterBy === "dog") {
+    filteredList = allAnimals.filter(isDog);
+  }
+  displayList(filteredList);
+}
+
+function isCat(animal) {
+  return animal.type === "cat";
+}
+function isDog(animal) {
+  return animal.type === "dog";
+}
+
+/* function buildList() {
+  const currentList = filterList(allAnimals);
+  const sortedList = sortList(currentList);
   // FUTURE: Filter and sort currentList before displaying
   //TODO: Filtering and sorting in this buildList func.
 
-  displayList(currentList);
+  displayList(sortedList);
+} */
+
+function selectSort(event) {
+  const sortBy = event.target.dataset.sort;
+  console.log(`User selected ${sortBy}`);
+  sortList(sortBy);
+  /* setFilter(filter); */
 }
 
+function sortList(sortBy) {
+  let sortedList = allAnimals;
+  sortedList = sortedList.sort(sortByProperty);
+
+  function sortByProperty(animalA, animalB) {
+    if (animalA[sortBy] < animalB[sortBy]) {
+      return -1;
+    } else {
+      return 1;
+    }
+  }
+  displayList(sortedList);
+}
 function displayList(animals) {
   // clear the display
   document.querySelector("#list tbody").innerHTML = "";
