@@ -5,8 +5,8 @@ window.addEventListener("DOMContentLoaded", start);
 let allAnimals = [];
 
 const settings = {
-  filter: null,
-  sortBy: null,
+  filterBy: "all",
+  sortBy: "name",
   sortDir: "asc",
 };
 
@@ -16,16 +16,17 @@ const Animal = {
   desc: "-unknown animal-",
   type: "",
   age: 0,
-  // TODO: Add star
+  star: false,
 };
 
 function start() {
   console.log("ready");
 
   loadJSON();
-
-  // FUTURE: Add event-listeners to filter and sort buttons
   //TODO: Add eventlisteners to filters and sorting
+  registerButtons();
+}
+function registerButtons() {
   document
     .querySelectorAll("[data-action='filter']")
     .forEach((button) => button.addEventListener("click", selectFilter));
@@ -42,7 +43,9 @@ async function loadJSON() {
 
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
-  filterList(allAnimals);
+
+  // filter and sort on the first load
+  buildList();
 }
 
 function preapareObject(jsonObject) {
@@ -60,21 +63,26 @@ function preapareObject(jsonObject) {
 function selectFilter(event) {
   const filter = event.target.dataset.filter;
   console.log(`User selected ${filter}`);
-  filterList(filter);
-  /* setFilter(filter); */
+  //filterList(filter);
+  setFilter(filter);
 }
-/* function setFilter(filterBy) {
+
+function setFilter(filter) {
+  settings.filterBy = filter;
   buildList();
-} */
-function filterList(filterBy) {
-  let filteredList = allAnimals;
-  if (filterBy === "cat") {
+}
+
+function filterList(filteredList) {
+  if (settings.filterBy === "cat") {
     //create filtered list of only cat
     filteredList = allAnimals.filter(isCat);
-  } else if (filterBy === "dog") {
+  } else if (settings.filterBy === "dog") {
+    //create a filtered list of only dogs
     filteredList = allAnimals.filter(isDog);
+  } else if (settings.filterBy === "star") {
+    filteredList = allAnimals.filter(isStar);
   }
-  displayList(filteredList);
+  return filteredList;
 }
 
 function isCat(animal) {
@@ -83,15 +91,9 @@ function isCat(animal) {
 function isDog(animal) {
   return animal.type === "dog";
 }
-
-/* function buildList() {
-  const currentList = filterList(allAnimals);
-  const sortedList = sortList(currentList);
-  // FUTURE: Filter and sort currentList before displaying
-  //TODO: Filtering and sorting in this buildList func.
-
-  displayList(sortedList);
-} */
+function isStar(animal) {
+  return animal.star;
+}
 
 function selectSort(event) {
   const sortBy = event.target.dataset.sort;
@@ -104,29 +106,45 @@ function selectSort(event) {
     event.target.dataset.sortDirection = "asc";
   }
   console.log(`User selected ${sortBy} - ${sortDir}`);
-  sortList(sortBy, sortDir);
+  setSort(sortBy, sortDir);
   /* setFilter(filter); */
 }
 
-function sortList(sortBy, sortDir) {
-  let sortedList = allAnimals;
+function setSort(sortBy, sortDir) {
+  settings.sortBy = sortBy;
+  settings.sortDir = sortDir;
+  buildList();
+}
+
+function sortList(sortedList) {
+  /*  let sortedList = allAnimals; */
   let direction = 1;
-  if (sortDir === "desc") {
+  if (settings.sortDir === "desc") {
     direction = -1;
   } else {
-    direction = 1;
+    settings.direction = 1;
   }
   sortedList = sortedList.sort(sortByProperty);
 
   function sortByProperty(animalA, animalB) {
-    if (animalA[sortBy] < animalB[sortBy]) {
+    if (animalA[settings.sortBy] < animalB[settings.sortBy]) {
       return -1 * direction;
     } else {
       return 1 * direction;
     }
   }
+  return sortedList;
+}
+
+function buildList() {
+  const currentList = filterList(allAnimals);
+  const sortedList = sortList(currentList);
+  // FUTURE: Filter and sort currentList before displaying
+  //TODO: Filtering and sorting in this buildList func.
+
   displayList(sortedList);
 }
+
 function displayList(animals) {
   // clear the display
   document.querySelector("#list tbody").innerHTML = "";
