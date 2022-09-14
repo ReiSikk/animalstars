@@ -165,15 +165,30 @@ function displayAnimal(animal) {
   const clone = document.querySelector("template#animal").content.cloneNode(true);
 
   // set clone data
-
-  // TODO: Show star ⭐ or ☆
-
   clone.querySelector("[data-field=name]").textContent = animal.name;
   clone.querySelector("[data-field=desc]").textContent = animal.desc;
   clone.querySelector("[data-field=type]").textContent = animal.type;
   clone.querySelector("[data-field=age]").textContent = animal.age;
 
+  // show star or not
+  if (animal.star === true) {
+    clone.querySelector("[data-field=star]").textContent = "⭐️";
+  } else {
+    clone.querySelector("[data-field=star]").textContent = "☆";
+  }
+
   // TODO: Add event listener to click on star
+  clone.querySelector("[data-field=star]").addEventListener("click", clickStar);
+
+  function clickStar() {
+    if (animal.star === true) {
+      animal.star = false;
+    } else {
+      animal.star = true;
+    }
+    //update the "view"
+    buildList();
+  }
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
