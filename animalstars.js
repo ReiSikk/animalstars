@@ -214,6 +214,7 @@ function tryToMakeAWinner(selectedAnimal) {
   const other = winners.filter((animal) => animal.type === selectedAnimal.type).shift();
 
   // if there is another of the same type
+  //this prioritizes checking if there is already a winner of this type not the number of winners, so if there is already 2 different winners it will remove the correct one
   if (other !== undefined) {
     console.log("There can be only one winner of the same type");
     removeOther(other);
@@ -230,6 +231,7 @@ function tryToMakeAWinner(selectedAnimal) {
     document.querySelector("#remove_other .closebutton").addEventListener("click", closeDialog);
     document.querySelector("#remove_other #removeother").addEventListener("click", clickRemoveOther);
 
+    document.querySelector("#remove_other [data-field=otherWinner]").textContent = other.name;
     //if ignore - do nothing
     function closeDialog() {
       document.querySelector("#remove_other").classList.add("hide");
@@ -254,6 +256,10 @@ function tryToMakeAWinner(selectedAnimal) {
     document.querySelector("#remove_aorb #removea").addEventListener("click", clickRemoveA);
     document.querySelector("#remove_aorb #removeb").addEventListener("click", clickRemoveB);
 
+    // show names on the buttons
+    document.querySelector("#remove_aorb [data-field=winnerA]").textContent = winnerA.name;
+    document.querySelector("#remove_aorb [data-field=winnerB]").textContent = winnerB.name;
+
     //if ignore do nothing
     function closeDialog() {
       document.querySelector("#remove_aorb").classList.add("hide");
@@ -263,7 +269,6 @@ function tryToMakeAWinner(selectedAnimal) {
     }
 
     function clickRemoveA() {
-      console.log("clickremoveA called");
       removeWinner(winnerA);
       makeWinner(selectedAnimal);
       buildList();
@@ -271,7 +276,6 @@ function tryToMakeAWinner(selectedAnimal) {
     }
 
     function clickRemoveB() {
-      console.log("click rmeove b called");
       console.log(winnerB);
       //else if remove B
       removeWinner(winnerB);
